@@ -1,18 +1,19 @@
 import crypto from "crypto";
 import bencode from "bencode";
+import { announceUDP } from "./udpTrackerClient.js";
 
 import { loadTorrent, computeInfoHash, getTotalSize } from "./torrentMeta.js";
 import { announce } from "./trackerClient.js";
 
 // 1. Load torrent
-const { decoded } = loadTorrent("test.torrent");
+const { decoded } = loadTorrent("puppy.torrent");
 
 // 2. Decode tracker URL
 const trackerUrl = Buffer.from(decoded.announce).toString("utf8");
 console.log("Tracker:", trackerUrl);
 
 // 3. Compute infohash (raw bytes)
-const infoHash = computeInfoHash("test.torrent");
+const infoHash = computeInfoHash("puppy.torrent");
 console.log("Infohash (hex):", infoHash.toString("hex"));
 
 // 4. peer_id (20 bytes)
@@ -54,5 +55,17 @@ try {
 } catch (err) {
     console.error("Tracker error:", err);
 }
+
+
+
+
+const response = await announceUDP(
+    trackerUrl,
+    infoHash,
+    peerId,
+    left
+);
+
+console.log("UDP tracker response:", response);
 
 
